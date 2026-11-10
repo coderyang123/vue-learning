@@ -1,0 +1,14 @@
+{
+  "name": "vue-learning",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "packageManager": "pnpm@12.4.2",
+  "scripts": {
+    "dev": "pnpm --filter \"./examples/*\" --parallel dev",
+    "build": "pnpm --filter \"./examples/*\" --parallel build",
+    "lint": "pnpm --filter \"./examples/*\" --parallel lint",
+    "typecheck": "pnpm --filter \"./examples/*\" --parallel typecheck",
+    "clean": "pnpm --filter \"./examples/*\" --parallel clean"
+  }
+}
