@@ -1,0 +1,112 @@
+#!/usr/bin/env python3
+"""校验 docs/01 的 §3 代码精读 与 examples/01-template-syntax 源码是否一致。
+
+真实规则（对应文档 §3 的呈现方式）：
+  1. 源码的每一行**代码**（去掉空行、结构性标签、以及被文档替换成 ① 编号标注的说明性注释）
+     必须能在文档对应小节的代码块里找到，且**顺序一致**；
+  2. 允许文档侧去掉 `<template>` 包裹造成的整体缩进左移；
+  3. 源码里纯注释行被文档替换成编号标注时，只做提示，不算不一致。
+
+退出码 0 = 一致，1 = 不一致。
+"""
+import re
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+DOC = ROOT / "docs/01-Vue3-核心与模板.md"
+EX = ROOT / "examples/01-template-syntax/src"
+
+SECTIONS = [
+    ("3.1", "App.vue", EX / "App.vue"),
+    ("3.2", "TaskItem.vue", EX / "components/TaskItem.vue"),
+    ("3.3", "TaskFilterBar.vue", EX / "components/TaskFilterBar.vue"),
+]
+
+# 行尾的语法编号标注（① - ⑱）
+ANNOT = re.compile(r"(<!--\s*[①-⑱][^>]*-->)|(//\s*[①-⑱][^/]*)$")
+# 结构性标签行
+STRUCTURAL = {
+    '<script setup lang="ts">',
+    "</script>",
+    "<template>",
+    "</template>",
+}
+# 纯说明性 HTML 注释（文档里被替换成 ① 编号标注）
+PURE_COMMENT = re.compile(r"^\s*<!--.*-->\s*$")
+
+
+def strip_annot(line: str) -> str:
+    return ANNOT.sub("", line).strip()
+
+
+def is_code_line(line: str) -> bool:
+    if not line.strip():
+        return False
+    if line.strip() in STRUCTURAL:
+        return False
+    if PURE_COMMENT.match(line):
+        return False
+    return True
+
+
+def doc_section(sec: str) -> str:
+    s = DOC.read_text(encoding="utf-8")
+    i = s.index(f"### {sec} ")
+    j = s.find("\n### ", i + 1)
+    if j == -1:
+        j = s.index("\n## §4 ", i)
+    return s[i:j]
+
+
+def main() -> int:
+    ok = True
+    for sec, name, src in SECTIONS:
+        if not src.exists():
+            print(f"[跳过] {sec} 源文件不存在：{src}")
+            continue
+
+        doc_lines: list[str] = []
+        for m in re.finditer(r"```(?:vue|ts|js)\n(.*?)```", doc_section(sec), re.S):
+            for raw in m.group(1).split("\n"):
+                ln = strip_annot(raw)
+                if is_code_line(ln):
+                    doc_lines.append(ln)
+
+        src_raw = src.read_text(encoding="utf-8").split("\n")
+        src_lines = [strip_annot(x) for x in src_raw if is_code_line(strip_annot(x))]
+        src_comments = [
+            x.strip()
+            for x in src_raw
+            if PURE_COMMENT.match(x) and not ANNOT.search(x)
+        ]
+
+        missing = [ln for ln in src_lines if ln not in doc_lines]
+        extra = [ln for ln in doc_lines if ln not in src_lines]
+        order_ok = [
+            ln
+            for i, ln in enumerate(doc_lines)
+            if i < len(src_lines) and src_lines[i] != ln
+        ]
+
+        if missing or extra or order_ok:
+            ok = False
+            print(f"[不一致] {sec} {name}")
+            for ln in missing:
+                print(f"    源码有、文档缺： {ln}")
+            for ln in extra:
+                print(f"    文档有、源码缺： {ln}")
+            for ln in order_ok:
+                print(f"    顺序不符：       {ln}")
+        else:
+            print(f"[一致]   {sec} {name}  （{len(src_lines)} 行代码顺序一致）")
+            for c in src_comments:
+                print(f"           （注释行在文档中替换为编号标注）：{c}")
+
+    print()
+    print("结果:", "✅ 全部一致" if ok else "❌ 存在不一致")
+    return 0 if ok else 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())
