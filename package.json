@@ -9,6 +9,12 @@
     "build": "pnpm --filter \"./examples/*\" --parallel build",
     "lint": "pnpm --filter \"./examples/*\" --parallel lint",
     "typecheck": "pnpm --filter \"./examples/*\" --parallel typecheck",
-    "clean": "pnpm --filter \"./examples/*\" --parallel clean"
+    "clean": "pnpm --filter \"./examples/*\" --parallel clean",
+    "format:docs": "prettier --write \"docs/**/*.md\"",
+    "format:docs:check": "prettier --check \"docs/**/*.md\"",
+    "check:doc-sync": "python3 scripts/check-doc-code-sync.py"
+  },
+  "devDependencies": {
+    "prettier": "^3.9.10"
   }
 }
