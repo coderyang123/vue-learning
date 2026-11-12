@@ -26,9 +26,32 @@ pnpm --filter @example/01-template-syntax dev
 | `props` / `emits` | `src/components/TaskItem.vue` |
 | `defineModel` 双向绑定 | `src/components/TaskFilterBar.vue` |
 | 组件事件通信 | `src/App.vue` ↔ `TaskItem.vue` |
+| `computed` vs 普通函数对照 | `src/App.vue` 顶部的「实算次数」表格 |
+
+## 对照实验：computed vs 普通函数
+
+页面顶部有一张对照表，两种写法算的是同一个「剩余未完成数」：
+
+- `computed`（`src/App.vue` 的 `remaining`）：依赖不变就返回缓存，**只在依赖变化时重算**。
+- 普通函数（`src/App.vue` 的 `remainingByMethod`）：**每次被调用都重算**。
+
+点「触发一次重渲染」按钮（它只改一个跟派生数据无关的状态 `renderTick`），观察「实算次数」：
+
+| 操作                                 | computed | 普通函数 |
+| ------------------------------------ | -------- | -------- |
+| 首次挂载                             | +1       | +1       |
+| 点「触发一次重渲染」（派生数据没变） | **+0**   | **+1**   |
+| 切换筛选条件 `filter`（派生数据没变） | **+0**   | **+1**   |
+| 新增一条任务 / 勾选一条任务          | +1       | +1       |
+
+结论：**差别在「算几次」，不在「会不会更新」**——函数写在模板里一样是响应式的。
+
+> 计数器用普通变量而不是 `ref`：在 `computed` 的 getter 里写 `ref` 会自触发递归，Vue 会直接报
+> Maximum recursive updates exceeded。
 
 ## 留给第 2 章的问题
 
-1. `visibleTasks` 目前用 `computed`，它的缓存机制到底是怎么工作的？
-2. `tasks.value.unshift(...)` 触发了几次渲染？为什么只渲染了一次？
-3. 如果把 `filter` 从 `ref` 改成 `reactive` 的写法，会发生什么？
+1. `computed` 的缓存到底是怎么实现的？Vue 3.5 的 `refreshComputed` 在什么条件下才 `bump` 依赖版本号？
+2. 为什么「依赖变了但派生值没变」时，下游组件不会重渲染？
+3. `tasks.value.unshift(...)` 触发了几次渲染？为什么只渲染了一次？
+4. 如果把 `filter` 从 `ref` 改成 `reactive` 的写法，会发生什么？

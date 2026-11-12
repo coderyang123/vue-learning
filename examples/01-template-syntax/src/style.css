@@ -49,6 +49,73 @@ body {
   font-size: 14px;
 }
 
+.compare {
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+  font-size: 13px;
+}
+
+.compare__table {
+  width: 100%;
+  margin-bottom: 8px;
+  border-collapse: collapse;
+  font-size: 13px;
+  text-align: left;
+}
+
+.compare__table th,
+.compare__table td {
+  padding: 3px 6px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.compare__table th {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.compare__table td:nth-child(2) {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.compare__row {
+  margin: 0 0 6px;
+  color: var(--text-muted);
+}
+
+.compare__row strong {
+  color: var(--text);
+}
+
+.compare__hint {
+  margin: 6px 0 0;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.compare__btn {
+  margin-left: 8px;
+  padding: 3px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text-muted);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.compare__btn:hover {
+  border-color: var(--accent);
+  color: var(--accent-dark);
+}
+
 .board__form {
   display: flex;
   gap: 8px;

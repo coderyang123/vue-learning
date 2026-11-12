@@ -12,14 +12,15 @@
 2. **贯穿项目单列**：`examples/08-todo-board/` 是主战场，第 04→08 章持续改造它，不重复建工程。
 3. **文档与代码同步推进**：每写完一章文档，就实现对应代码；文档里的「参考实现」直接链接到 `src/`
    中的真实文件路径。
-4. **先语法、后代码**：每章文档固定使用 §4 的 7 段式模板——**先把本章要用的语法讲透，再带着语法逐行读真实代码**。第 01 章是这套结构的样板。
+4. **先语法、后代码**：每章文档固定使用 §4 的 7 段式模板——**先把本章要用的语法讲透，再带着语法逐行读真实代码**。第 01
+   章是这套结构的样板。
 
 ---
 
 ## 0. 技术栈与版本基线（2026-11 核对 npm registry）
 
 | 依赖                            | 版本    | 说明                                             |
-| ------------------------------- | ------- | ------------------------------------------------ |
+|---------------------------------|---------|--------------------------------------------------|
 | vue                             | ^3.5.44 | `<script setup>` + `defineModel`（3.4+）         |
 | vue-router                      | ^5.4.0  | peer: vue `^3.5.34 \|\| ^4`                      |
 | pinia                           | ^4.1.0  | peer: vue `^3.5.11`、typescript `>=5.6`          |
@@ -131,10 +132,10 @@ src/
 - `v-model` 与修饰符、`v-for` 与 `:key`、`v-if` vs `v-show`、动态 class/style、动态参数。
 - 表单双向绑定、事件修饰符（`.prevent` / `.stop`）。
 - 组件通信第一课：`props` 向下、`emits` 向上、`defineModel` 双向。
-- **产出**：待办清单最小版（可增删、可筛选、有统计）。
+- **产出**：待办清单最小版（可增删、可筛选、有统计）+ `computed`
+  vs 普通函数的对照实验面板（页面顶部能直接看到「实算次数」的差异）。
 
-**文档**：[`docs/01-Vue3-核心与模板.md`](01-Vue3-核心与模板.md) ✅ ·
-**代码**：`examples/01-template-syntax/`
+**文档**：[`docs/01-Vue3-核心与模板.md`](01-Vue3-核心与模板.md) ✅ · **代码**：`examples/01-template-syntax/`
 
 **本章文档结构（7 段式样板）**
 
@@ -281,19 +282,19 @@ store 间组合 ⑧ 插件机制与持久化
 - 响应式断点与 `@container`。
 - Vite 集成：`@tailwindcss/vite` + `@source` 扫描范围。
 - **与 Element Plus 共存**（本章最大的坑）：
-  - Tailwind v4 的 **preflight** 会重置 Element Plus 内部样式（按钮边框、表单字体、表格边框）；
-  - 推荐在 `src/styles/tailwind.css` 显式分层并按需跳过 preflight：
+    - Tailwind v4 的 **preflight** 会重置 Element Plus 内部样式（按钮边框、表单字体、表格边框）；
+    - 推荐在 `src/styles/tailwind.css` 显式分层并按需跳过 preflight：
 
-    ```css
-    @layer theme, base, element, components, utilities;
-    @import "tailwindcss/theme.css" layer(theme);
-    @import "tailwindcss/utilities.css" layer(utilities);
-    ```
+      ```css
+      @layer theme, base, element, components, utilities;
+      @import "tailwindcss/theme.css" layer(theme);
+      @import "tailwindcss/utilities.css" layer(utilities);
+      ```
 
-    （省略 `preflight.css` 即关闭重置；或用 `@import "tailwindcss" prefix(tw);` 让工具类统一带 `tw-`
-    前缀彻底隔离。）
+      （省略 `preflight.css` 即关闭重置；或用 `@import "tailwindcss" prefix(tw);` 让工具类统一带 `tw-`
+      前缀彻底隔离。）
 
-  - 层顺序决定覆盖关系：Element Plus 样式放 `element` 层，业务样式放 `components` 层。
+    - 层顺序决定覆盖关系：Element Plus 样式放 `element` 层，业务样式放 `components` 层。
 - **组合策略**：EP 负责复杂交互组件（表格、表单、弹窗），Tailwind 负责布局与视觉细节，不去改 EP 组件内部结构。
 
 **§1 语法课清单**：① 按需引入与 `ElementPlusResolver` ② Table 的列插槽与排序 ③ Form /
@@ -335,7 +336,7 @@ loading / error / empty 三态约定 ③ `AbortController` 取消请求 ④ 骨�
 ## 3. 建议节奏
 
 | 阶段 | 主题                    | 示例工程                                     | 耗时   | 状态 |
-| ---- | ----------------------- | -------------------------------------------- | ------ | ---- |
+|------|-------------------------|----------------------------------------------|--------|------|
 | 0    | 工程化基线              | `01-template-syntax`（工程部分）             | 0.5 天 | ✅   |
 | 1    | Vue 3 核心与模板        | `01-template-syntax`                         | 2 天   | ✅   |
 | 2    | 响应式系统              | `02-reactivity`                              | 3 天   | ⬜   |
@@ -355,7 +356,7 @@ loading / error / empty 三态约定 ③ `AbortController` 取消请求 ④ 骨�
 第 02～08 章**统一**使用下面这套 7 段式模板。第 01 章是已完成的样板，可直接参照。
 
 | 段落 | 标题                   | 内容要求                               |
-| ---- | ---------------------- | -------------------------------------- |
+|------|------------------------|----------------------------------------|
 | 1    | **§1 语法课**          | **本章要用到的全部语法/API**，逐条讲透 |
 | 2    | **§2 数据流 / 机制图** | 本章的数据或控制流向（ASCII 图）       |
 | 3    | **§3 代码精读**        | **逐段贴真实代码**，每处标注语法编号   |

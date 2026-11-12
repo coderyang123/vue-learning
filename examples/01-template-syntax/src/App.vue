@@ -19,7 +19,29 @@ const visibleTasks = computed((): Task[] => {
   return tasks.value;
 });
 
-const remaining = computed((): number => tasks.value.filter((task) => !task.done).length);
+// ⑮ 计数器用普通变量而不是 ref：在 computed 里写 ref 会自触发递归，报 Maximum recursive updates exceeded
+let computedRuns = 0;
+let methodRuns = 0;
+
+// ⑮ 无关状态：只用来制造一次重渲染，不影响任何派生数据
+const renderTick = ref(0);
+
+// ⑮ 写法一：computed —— 依赖不变就返回缓存，不重复计算
+const remaining = computed((): number => {
+  computedRuns++;
+  return tasks.value.filter((task) => !task.done).length;
+});
+
+// ⑮ 写法二：普通函数 —— 每次被调用都重新算一遍
+const remainingByMethod = (): number => {
+  methodRuns++;
+  return tasks.value.filter((task) => !task.done).length;
+};
+
+// ⑮ 触发一次与派生数据无关的重渲染，用来观察两个计数器
+const triggerRerender = (): void => {
+  renderTick.value++;
+};
 
 const addTask = (): void => {
   const title = draft.value.trim();
@@ -46,6 +68,36 @@ const removeTask = (id: number): void => {
         剩余 <strong>{{ remaining }}</strong> / {{ tasks.length }} 项未完成
       </p>
     </header>
+
+    <!-- ⑮ 对照实验：computed vs 普通函数 -->
+    <section class="compare">
+      <table class="compare__table">
+        <thead>
+          <tr>
+            <th>写法</th>
+            <th>结果</th>
+            <th>实算次数</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>computed</td>
+            <td>{{ remaining }}</td>
+            <td>{{ computedRuns }} 次</td>
+          </tr>
+          <tr>
+            <td>普通函数</td>
+            <td>{{ remainingByMethod() }}</td>
+            <td>{{ methodRuns }} 次</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="compare__row">
+        已触发重渲染 {{ renderTick }} 次
+        <button class="compare__btn" type="button" @click="triggerRerender">触发一次重渲染</button>
+      </p>
+      <p class="compare__hint">结果一样，差别只在「算几次」，不在「会不会更新」。</p>
+    </section>
 
     <!-- v-model 双向绑定 + 修饰符 .trim -->
     <form class="board__form" @submit.prevent="addTask">
