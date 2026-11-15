@@ -1,15 +1,16 @@
 <!-- §1.17 ⑰ v-model 的子组件（defineModel 版） -->
 <script setup lang="ts">
 // defineModel 版：一行顶掉「声明 prop + 声明事件 + 维护双向 ref」
-// 第一个参数是 prop 名 → 父组件写 v-model:title="xxx"
-const title = defineModel<string>('title', { required: true });
+// 第一个参数 'title' 是 prop 名 → 父组件写 v-model:title="xxx"
+// 左边 titleModel 是本地变量名，和 prop 名无关，随手起
+const titleModel = defineModel<string>('title', { required: true });
 </script>
 
 <template>
   <div>
-    <input v-model="title" placeholder="defineModel 版：直接 v-model" />
+    <input v-model="titleModel" placeholder="defineModel 版：直接 v-model" />
     <p>
-      子组件读到的 prop：<code>{{ title || '（空）' }}</code>
+      prop <code>title</code> 的值：<code>{{ titleModel || '（空）' }}</code>
     </p>
   </div>
 </template>

@@ -6,6 +6,7 @@ import DemoModelManualChild from '@/demos/DemoModelManualChild.vue';
 import DemoModelMultiChild from '@/demos/DemoModelMultiChild.vue';
 
 // 两个子组件绑的是同一个父组件变量
+// v-model:title 里的 title 是 prop 名（契约，要和子组件那边对上），pageTitle 是父组件自己的变量名
 const pageTitle = ref('两个子组件共用的标题');
 
 // 受控示例：父组件有权拒绝更新

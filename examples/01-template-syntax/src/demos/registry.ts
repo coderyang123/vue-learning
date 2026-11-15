@@ -147,7 +147,7 @@ export const demos: DemoEntry[] = [
     id: '1-16',
     section: '1.16',
     syntax: '⑯ props 绑定与事件监听',
-    summary: '父 → 子 与 子 → 父，两条线怎么对上',
+    summary: '父 → 子、子 → 父，两条线接在同一份数据上',
     file: 'src/demos/DemoPropsEvents.vue',
     component: DemoPropsEvents,
   },
