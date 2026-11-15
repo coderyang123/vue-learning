@@ -57,7 +57,7 @@ vue-learning/
 ├── docs/                     # 教程正文，一章一篇
 │   ├── 00-工程化基线.md      ✅
 │   ├── 01-Vue3-核心与模板.md  ✅
-│   ├── 02-响应式系统.md       ⬜ 待写
+│   ├── 02-响应式系统.md       ✅
 │   ├── 03-组件化设计.md       ⬜ 待写
 │   ├── 04-Vue-Router.md       ⬜ 待写
 │   ├── 05-Pinia-状态管理.md   ⬜ 待写
@@ -66,7 +66,7 @@ vue-learning/
 │   └── 08-综合实战与工程化.md  ⬜ 待写
 ├── examples/
 │   ├── 01-template-syntax/        # 模板语法（独立工程，✅ 已完成）
-│   ├── 02-reactivity/             # 响应式系统（⬜ 待建）
+│   ├── 02-reactivity/             # 响应式系统（✅ 已完成）
 │   ├── 03-components/             # 组件化设计（⬜ 待建）
 │   ├── 04-router/                 # 路由（⬜ 待建）
 │   ├── 05-pinia/                  # 状态管理（⬜ 待建）
@@ -177,6 +177,22 @@ src/
 watchEffect）
 
 **验收**：能解释「为什么 `const { count } = reactive(obj)` 不更新」，并给出两种修复方案。
+
+**文档**：[`docs/02-响应式系统.md`](02-响应式系统.md) ✅ · **代码**：`examples/02-reactivity/`
+
+**示例工作台**：`examples/02-reactivity/src/views/DemoWorkbench.vue` · 目录
+<http://localhost:5172/#/demos>
+
+**本章文档结构（7 段式样板）**
+
+- §1 语法课（11 条，编号 ①～⑪）：`ref` 与模板自动解包、`reactive` 与 Proxy、
+  `toRef`/`toRefs`/`toRaw`/`unref`、`computed` 的惰性求值与缓存、可写 computed、
+  `watch` 的三个选项、`watchEffect` 与自动依赖收集、`onCleanup` 副作用清理、
+  调度机制与 `nextTick`、`shallowRef`/`markRaw`、`useTemplateRef`。
+- §2 机制图：依赖收集与触发（ASCII 图）+ 一次修改的完整流程（同步 → 微任务队列 → 绘制）。
+- §3 代码精读：`src/reactive.ts`（手写 `createReactive`，逐行标注编号）·
+  `src/App.vue`（四组对照实验）逐段标注编号。
+- §1 每节配一个可运行示例（`src/demos/` 下 11 个 `.vue`，文档里逐节给链接）。
 
 ---
 
@@ -345,7 +361,7 @@ loading / error / empty 三态约定 ③ `AbortController` 取消请求 ④ 骨�
 |------|-------------------------|----------------------------------------------|--------|------|
 | 0    | 工程化基线              | `01-template-syntax`（工程部分）             | 0.5 天 | ✅   |
 | 1    | Vue 3 核心与模板        | `01-template-syntax`                         | 2 天   | ✅   |
-| 2    | 响应式系统              | `02-reactivity`                              | 3 天   | ⬜   |
+| 2    | 响应式系统              | `02-reactivity`                              | 3 天   | ✅   |
 | 3    | 组件化设计              | `03-components`                              | 3 天   | ⬜   |
 | 4    | Vue Router              | `04-router` + `08-todo-board`                | 2.5 天 | ⬜   |
 | 5    | Pinia                   | `05-pinia` + `08-todo-board`                 | 2.5 天 | ⬜   |
@@ -419,13 +435,20 @@ loading / error / empty 三态约定 ③ `AbortController` 取消请求 ④ 骨�
 
 > 第 01 章的落地范例：`examples/01-template-syntax/src/demos/`（16 个示例）+
 > `src/views/DemoWorkbench.vue`，文档见 `docs/01-Vue3-核心与模板.md`
-> 的「配套可运行示例」一节。插入链接的脚本：`scripts/add-demo-links.py`（改小节号映射后可复用到其他章节）。
+> 的「配套可运行示例」一节。第 02 章沿用同一套：`examples/02-reactivity/src/demos/`（11 个示例）。
+>
+> 插入链接的脚本：`scripts/add-demo-links.py`——脚本里已经登记了第 01、02 两章的小节映射，
+> 新增章节时往 `CHAPTERS` 里加一条即可（`python3 scripts/add-demo-links.py 02` 可只处理某章）。
+> 文档与源码一致性校验：`scripts/check-doc-code-sync.py`（同样按章登记 §3 的对应关系）。
 
 ---
 
 ## 5. 常见坑速查（写教程时重点展开）
 
 - `reactive` 解构丢响应性。
+- `watchEffect` 里写 `ref`：副作用依赖了自己写的东西，容易自触发（改用普通变量，或把写入挪出副作用）。
+- 模板里写 `count.value`：模板已经解包过一次，再取一次 `.value` 就是 `undefined`。
+- `toRaw(state) === state` 是 `false`——`toRaw` 拿到的是原始对象，`state` 是它的代理。
 - `v-for` 用 index 当 key 导致状态错位。
 - 路由 query 与 store 双向同步造成死循环。
 - `watch` 深度侦听大对象带来性能问题。

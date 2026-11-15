@@ -14,7 +14,7 @@
 |------|-------------------------|-------------------------------------|------|
 | 00   | 工程化基线              | `examples/01-template-syntax`       | ✅   |
 | 01   | Vue 3 核心与模板语法    | `examples/01-template-syntax`       | ✅   |
-| 02   | 响应式系统              | `examples/02-reactivity`            | ⬜   |
+| 02   | 响应式系统              | `examples/02-reactivity`            | ✅   |
 | 03   | 组件化设计              | `examples/03-components`            | ⬜   |
 | 04   | Vue Router              | `examples/04-router`                | ⬜   |
 | 05   | Pinia 状态管理          | `examples/05-pinia`                 | ⬜   |
@@ -32,9 +32,12 @@ pnpm dev                              # 启动后打开 http://localhost:5171
 open http://localhost:5171/#/demos    # 示例工作台（全部示例目录）
 ```
 
-第 01 章的示例在 `examples/01-template-syntax/src/demos/`（16 个语法点各一个 `.vue`），
-工作台在 `src/views/DemoWorkbench.vue`。后续章节沿用同一套约定，详见
-[docs/TUTORIAL.md](docs/TUTORIAL.md) §4。
+- 第 01 章的示例在 `examples/01-template-syntax/src/demos/`（16 个语法点各一个 `.vue`），
+  工作台在 `src/views/DemoWorkbench.vue`
+- 第 02 章的示例在 `examples/02-reactivity/src/demos/`（11 个语法点各一个 `.vue`），
+  工作台同样在 `src/views/DemoWorkbench.vue`
+
+后续章节沿用同一套约定，详见 [docs/TUTORIAL.md](docs/TUTORIAL.md) §4。
 
 ## 目录结构
 
@@ -45,6 +48,7 @@ vue-learning/
 ├── docs/                   # 教程正文
 └── examples/
     ├── 01-template-syntax/ # 独立 Vite 工程，自带 package.json
+    ├── 02-reactivity/      # 响应式系统
     └── ...
 ```
 
