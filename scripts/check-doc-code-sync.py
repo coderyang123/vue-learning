@@ -34,10 +34,29 @@ STRUCTURAL = {
 }
 # 纯说明性 HTML 注释（文档里被替换成 ① 编号标注）
 PURE_COMMENT = re.compile(r"^\s*<!--.*-->\s*$")
+# 字符串字面量（单引号 / 双引号 / 反引号）
+STRING_LITERAL = re.compile(r"'(?:[^'\\]|\\.)*'|\"(?:[^\"\\]|\\.)*\"|`(?:[^`\\]|\\.)*`")
 
 
 def strip_annot(line: str) -> str:
     return ANNOT.sub("", line).strip()
+
+
+def normalize_ws(line: str) -> str:
+    """去掉字符串字面量以外的所有空白。
+
+    文档里的代码块刻意用紧凑写法（`import {ref} from 'vue'`），源码走 Prettier
+    （`import { ref } from 'vue'`）——空格风格上的差异不算「文档与源码不一致」，
+    所以比对前先归一化。字符串字面量里的空白原样保留，那部分是有语义的。
+    """
+    parts: list[str] = []
+    last = 0
+    for match in STRING_LITERAL.finditer(line):
+        parts.append(re.sub(r"\s+", "", line[last : match.start()]))
+        parts.append(match.group(0))
+        last = match.end()
+    parts.append(re.sub(r"\s+", "", line[last:]))
+    return "".join(parts)
 
 
 def is_code_line(line: str) -> bool:
@@ -71,10 +90,10 @@ def main() -> int:
             for raw in m.group(1).split("\n"):
                 ln = strip_annot(raw)
                 if is_code_line(ln):
-                    doc_lines.append(ln)
+                    doc_lines.append(normalize_ws(ln))
 
         src_raw = src.read_text(encoding="utf-8").split("\n")
-        src_lines = [strip_annot(x) for x in src_raw if is_code_line(strip_annot(x))]
+        src_lines = [normalize_ws(strip_annot(x)) for x in src_raw if is_code_line(strip_annot(x))]
         src_comments = [
             x.strip()
             for x in src_raw

@@ -12,7 +12,8 @@
     "clean": "pnpm --filter \"./examples/*\" --parallel clean",
     "format:docs": "prettier --write \"docs/**/*.md\"",
     "format:docs:check": "prettier --check \"docs/**/*.md\"",
-    "check:doc-sync": "python3 scripts/check-doc-code-sync.py"
+    "check:doc-sync": "python3 scripts/check-doc-code-sync.py",
+    "docs:demo-links": "python3 scripts/add-demo-links.py"
   },
   "devDependencies": {
     "prettier": "^3.9.10"

@@ -99,7 +99,7 @@ const removeTask = (id: number): void => {
       <p class="compare__hint">结果一样，差别只在「算几次」，不在「会不会更新」。</p>
     </section>
 
-    <!-- v-model 双向绑定 + 修饰符 .trim -->
+    <!-- v-model 双向绑定 -->
     <form class="board__form" @submit.prevent="addTask">
       <input
         v-model="draft"
